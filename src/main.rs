@@ -15,4 +15,19 @@ fn default_config_path() -> String {
 
 fn main() {
     let args = Args::parse();
+    let path = Path::new(&args.config);
+
+    match path.exists() && matches!(path.extension(), Some(ext) if ext == "yaml" || ext == "yml") {
+        true => {
+            println!("Config exists!");
+        }
+        false => {
+            println!("Config does not exist or is not a YAML");
+            println!(
+                "Creating default config located at {}",
+                default_config_path()
+            );
+            let _ = File::create(default_config_path());
+        }
+    }
 }
