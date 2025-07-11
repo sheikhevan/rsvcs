@@ -23,10 +23,7 @@ fn main() {
         }
         false => {
             println!("Config does not exist or is not a YAML");
-            println!(
-                "Creating default config located at {}",
-                default_config_path()
-            );
+            println!("Creating default config at {}", default_config_path());
             let _ = File::create(default_config_path());
         }
     }
