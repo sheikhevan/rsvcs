@@ -5,9 +5,4 @@ pkgs.mkShell {
     rustc
     rustfmt
   ];
-
-  shellHook = ''
-    echo "rsbackup v0.0.1"
-    echo "author: Evan Alvarez"
-  '';
 }
