@@ -15,14 +15,4 @@ fn default_config_path() -> String {
 
 fn main() {
     let args = Args::parse();
-
-    match Path::new(&args.config).exists() {
-        true => {
-            println!("Config file located at -> {}", args.config);
-        }
-        false => {
-            println!("specified config file does not exist.");
-            let mut file = File::create(&args.config);
-        }
-    }
 }
