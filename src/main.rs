@@ -1,12 +1,18 @@
 use clap::Parser;
-use std::path::Path;
+use std::{env, path::Path};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
-    #[arg(short, long, default_value = "/home/evan/.config/rsvcs/config.yaml")]
+    #[arg(short, long, default_value_t = default_config_path())]
     config: String,
 }
+
+fn default_config_path() -> String {
+    let home = env::var("HOME").unwrap_or_else(|_| ".".to_string());
+    format!("{}/.config/rsvcs/config.yaml", home)
+}
+
 fn main() {
     let args = Args::parse();
 
