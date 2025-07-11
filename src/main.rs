@@ -1,5 +1,5 @@
 use clap::Parser;
-use std::{env, path::Path};
+use std::{env, fs::File, path::Path};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -21,7 +21,8 @@ fn main() {
             println!("Config file located at -> {}", args.config);
         }
         false => {
-            println!("Config file does not exist!");
+            println!("specified config file does not exist.");
+            let mut file = File::create(&args.config);
         }
     }
 }
