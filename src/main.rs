@@ -21,7 +21,13 @@ fn main() {
     match path.exists() && matches!(path.extension(), Some(ext) if ext == "yaml" || ext == "yml") {
         true => {
             println!("Config exists!");
-            parse_config::parse_yaml(&args.config);
+            match parse_config::parse_yaml(&args.config) {
+                Ok((config)) => {
+                    println!("Storage: {}", config.storage);
+                    println!("Items: {:?}", config.items);
+                }
+                Err(e) => println!("Error parsing config: {}", e),
+            }
         }
         false => {
             println!("Config does not exist or is not a YAML");
