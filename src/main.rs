@@ -1,5 +1,6 @@
 use clap::Parser;
 use std::{env, fs::File, path::Path};
+mod parse_config;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -20,6 +21,7 @@ fn main() {
     match path.exists() && matches!(path.extension(), Some(ext) if ext == "yaml" || ext == "yml") {
         true => {
             println!("Config exists!");
+            parse_config::parse_yaml(&args.config);
         }
         false => {
             println!("Config does not exist or is not a YAML");
