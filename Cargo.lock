@@ -161,6 +161,7 @@ name = "rsvcs"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "serde",
  "toml",
 ]
 

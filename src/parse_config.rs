@@ -1,7 +1,29 @@
+use serde::Deserialize;
 use std::env;
 use std::fs::File;
 use std::io::{ErrorKind, Read, Result};
-// use toml;
+use toml;
+
+#[derive(Debug, Deserialize)]
+struct Config {
+    general: General,
+    targets: Targets,
+}
+
+#[derive(Debug, Deserialize)]
+struct General {
+    verbose: bool,
+    destination: Option<String>,
+    number_of_copies: u32,
+    compression: bool,
+    compression_type: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+struct Targets {
+    sources: Vec<String>,
+    exclusions: Vec<String>,
+}
 
 fn get_config_path(cli_config_path: Option<String>) -> String {
     let default_config_path = format!(
@@ -48,5 +70,5 @@ pub fn parse_config(cli_config_path: Option<String>) {
         .read_to_string(&mut contents)
         .expect("Failed to read config");
 
-    println!("{}", contents)
+    let config: Config = toml::from_str(&contents).unwrap();
 }
