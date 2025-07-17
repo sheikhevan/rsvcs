@@ -1,8 +1,6 @@
 use clap::Parser;
 use std::env;
-use std::fs::File;
-use std::io::Read;
-use toml;
+mod parse_config;
 
 #[derive(Parser, Debug)]
 #[command(
@@ -26,13 +24,15 @@ fn main() {
         env::var("HOME").unwrap_or_else(|_| ".".to_string())
     );
 
-    let config = match args.config.as_deref() {
+    let config_path = match args.config.as_deref() {
         Some(s) => s.to_string(),
         None => default_config_path,
     };
 
+    parse_config::parse_config(&config_path);
+
     if args.verbose {
         println!("Verbose mode enabled!");
-        println!("Using config file: {}", config);
+        println!("Using config file: {}", config_path);
     }
 }
