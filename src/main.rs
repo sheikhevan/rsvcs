@@ -1,5 +1,4 @@
 use clap::Parser;
-use std::env;
 mod parse_config;
 
 #[derive(Parser, Debug)]
@@ -19,20 +18,9 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
 
-    let default_config_path = format!(
-        "{}/.config/rsvcs/config.toml",
-        env::var("HOME").unwrap_or_else(|_| ".".to_string())
-    );
-
-    let config_path = match args.config.as_deref() {
-        Some(s) => s.to_string(),
-        None => default_config_path,
-    };
-
-    parse_config::parse_config(&config_path);
+    parse_config::parse_config(args.config);
 
     if args.verbose {
         println!("Verbose mode enabled!");
-        println!("Using config file: {}", config_path);
     }
 }
