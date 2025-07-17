@@ -5,24 +5,24 @@ use std::io::{ErrorKind, Read, Result};
 use toml;
 
 #[derive(Debug, Deserialize)]
-struct Config {
-    general: General,
-    targets: Targets,
+pub struct Config {
+    pub general: General,
+    pub targets: Targets,
 }
 
 #[derive(Debug, Deserialize)]
-struct General {
-    verbose: bool,
-    destination: Option<String>,
-    number_of_copies: u32,
-    compression: bool,
-    compression_type: Option<String>,
+pub struct General {
+    pub verbose: bool,
+    pub destination: Option<String>,
+    pub number_of_copies: u32,
+    pub compression: bool,
+    pub compression_type: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
-struct Targets {
-    sources: Vec<String>,
-    exclusions: Vec<String>,
+pub struct Targets {
+    pub sources: Vec<String>,
+    pub exclusions: Vec<String>,
 }
 
 fn get_config_path(cli_config_path: Option<String>) -> String {
@@ -56,7 +56,7 @@ fn open_config(path: &str) -> Result<File> {
     config
 }
 
-pub fn parse_config(cli_config_path: Option<String>) {
+pub fn parse_config(cli_config_path: Option<String>) -> Config {
     let config_path = get_config_path(cli_config_path);
 
     let mut config_result = match open_config(&config_path) {
@@ -71,4 +71,5 @@ pub fn parse_config(cli_config_path: Option<String>) {
         .expect("Failed to read config");
 
     let config: Config = toml::from_str(&contents).unwrap();
+    return config;
 }

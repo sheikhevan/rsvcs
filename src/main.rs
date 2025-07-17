@@ -18,9 +18,9 @@ struct Cli {
 fn main() {
     let args = Cli::parse();
 
-    parse_config::parse_config(args.config);
+    let config = parse_config::parse_config(args.config);
 
-    if args.verbose {
+    if config.general.verbose || args.verbose {
         println!("Verbose mode enabled!");
     }
 }
