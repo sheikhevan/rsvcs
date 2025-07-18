@@ -23,4 +23,14 @@ impl Repository {
         }
         Ok(repo)
     }
+    pub fn is_staging_empty(&self) -> io::Result<bool> {
+        let staging_path = self.rsvcs.join("staging");
+
+        if !staging_path.exists() {
+            return Ok(true);
+        }
+
+        let is_empty = staging_path.read_dir()?.next().is_none();
+        Ok(is_empty)
+    }
 }

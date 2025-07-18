@@ -57,6 +57,17 @@ fn main() {
             }
         }
         Commands::Commit { message } => {
+            let repo = match Repository::open() {
+                Ok(repo) => repo,
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                    return;
+                }
+            }
+            let staging_status = match repo.is_staging_empty() {
+                Ok(true) => true,
+                Err(e) => panic!("There was an error accessing `staging`: {}", e),
+            }
             println!("Commiting with message {:?}", message);
         }
     }
