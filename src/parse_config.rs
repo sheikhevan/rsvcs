@@ -13,10 +13,10 @@ pub struct Config {
 #[derive(Debug, Deserialize)]
 pub struct General {
     pub verbose: bool,
-    pub destination: Option<String>,
+    pub destinations: Vec<String>,
     pub number_of_copies: u32,
     pub compression: bool,
-    pub compression_type: Option<String>,
+    pub compression_level: u8,
 }
 
 #[derive(Debug, Deserialize)]
