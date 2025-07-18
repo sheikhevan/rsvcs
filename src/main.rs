@@ -1,5 +1,5 @@
-use clap::Parser;
-mod parse_config;
+use clap::{Parser, Subcommand};
+mod init;
 
 #[derive(Parser, Debug)]
 #[command(
@@ -12,13 +12,33 @@ struct Cli {
     #[arg(short, long)]
     verbose: bool,
 
-    #[arg(short, long)]
-    add: Option<String>,
+    #[command(subcommand)]
+    command: Commands,
+}
 
-    #[arg(short, long)]
-    commit: Option<String>,
+#[derive(Subcommand, Debug)]
+enum Commands {
+    Init,
+    Add { files: Vec<String> },
+    Commit { message: String },
 }
 
 fn main() {
     let args = Cli::parse();
+
+    match args.command {
+        Commands::Init => {
+            println!("Initializing repository");
+            match init::init() {
+                Ok(()) => println!("Repository successfully initiated"),
+                Err(e) => eprintln!("There was an error creating the repository: {}", e),
+            };
+        }
+        Commands::Add { files } => {
+            println!("Adding files: {:?}", files);
+        }
+        Commands::Commit { message } => {
+            println!("Commiting with message {:?}", message);
+        }
+    }
 }
