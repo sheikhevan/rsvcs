@@ -1,7 +1,4 @@
-use std::{
-    fs, io,
-    path::{Path, PathBuf},
-};
+use std::{fs, io, path::PathBuf};
 use walkdir::{DirEntry, WalkDir};
 
 fn is_excluded(entry: &DirEntry, exclusions: &Vec<String>) -> bool {
@@ -22,6 +19,7 @@ pub fn backup(
         .iter()
         .map(|s| s.strip_suffix('/').unwrap_or(&s).to_string())
         .collect();
+
     for destination in destinations {
         for source in sources {
             let source_path = PathBuf::from(source);
@@ -33,9 +31,12 @@ pub fn backup(
                 let entry = entry?;
 
                 let from = entry.path();
-                let to = dest_path.join(from.strip_prefix(&source_path)?);
+                let to = dest_path
+                    .join(source_path.file_name().unwrap())
+                    .join(from.strip_prefix(&source_path)?);
+                println!("{:?}", source_path);
                 if verbose {
-                    println!("{} copied to => {}", from.display(), to.display())
+                    println!("{} copied to {}", from.display(), to.display())
                 }
 
                 // this creates the directories
