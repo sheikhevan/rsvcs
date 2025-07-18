@@ -1,4 +1,4 @@
-use std::{fs, io};
+use std::{fs, io, path::Path};
 use walkdir::{DirEntry, WalkDir};
 
 fn is_excluded(entry: &DirEntry, exclusions: &Vec<String>) -> bool {
@@ -10,17 +10,27 @@ fn is_excluded(entry: &DirEntry, exclusions: &Vec<String>) -> bool {
 }
 
 pub fn backup(
+    verbose: bool,
     destinations: &Vec<String>,
     sources: &Vec<String>,
     exclusions: &Vec<String>,
-) -> Result<String, io::Error> {
+) -> Result<(), io::Error> {
     for destination in destinations {
         for source in sources {
             let walker = WalkDir::new(source).into_iter();
             for entry in walker.filter_entry(|e| !is_excluded(e, exclusions)) {
-                println!("{} copied to {}", entry?.path().display(), destination)
+                let entry = entry?;
+                let path = entry.path();
+                let destination_path = Path::new(destination).join(path.file_name().unwrap());
+
+                if path.is_file() {
+                    fs::copy(path, &destination_path)?;
+                    if verbose {
+                        println!("{} copied to {}", path.display(), destination)
+                    }
+                }
             }
         }
     }
-    Ok("The backup was successful!".to_string())
+    Ok(())
 }
