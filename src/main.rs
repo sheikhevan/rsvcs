@@ -40,6 +40,7 @@ fn main() {
                 Err(e) => eprintln!("Repo initialzation failed: {e}"),
             }
         }
+
         Commands::Add { files } => {
             let repo = match Repository::open() {
                 Ok(repo) => repo,
@@ -57,6 +58,7 @@ fn main() {
                 }
             }
         }
+
         Commands::Commit { message } => {
             let repo = match Repository::open() {
                 Ok(repo) => repo,
@@ -66,19 +68,20 @@ fn main() {
                 }
             };
 
-            let staging_status = match repo.is_staging_empty() {
-                Ok(true) => true,
-                Ok(false) => false,
-                Err(e) => panic!("There was an error accessing `staging`: {}", e),
-            };
-
-            if staging_status {
-                repo.commit(&message);
-            } else {
-                println!("Staging directory is empty. add files using `rsvcs add`.");
+            match repo.is_staging_empty() {
+                Ok(true) => {
+                    println!("Staging directory is empty. Add files using 'rsvcs add'");
+                }
+                Ok(false) => {
+                    println!("Committing with message {:?}", message);
+                    if let Err(e) = repo.commit(&message) {
+                        eprintln!("Error committing: {}", e);
+                    }
+                }
+                Err(e) => {
+                    eprintln!("Error checking staging directory: {}", e);
+                }
             }
-
-            println!("Commiting with message {:?}", message);
         }
     }
 }

@@ -1,4 +1,4 @@
-use std::{io, path::PathBuf};
+use std::{fs, io, path::PathBuf};
 
 #[derive(Debug)]
 pub struct Repository {
@@ -26,11 +26,6 @@ impl Repository {
     pub fn is_staging_empty(&self) -> io::Result<bool> {
         let staging_path = self.rsvcs.join("staging");
 
-        if !staging_path.exists() {
-            return Ok(true);
-        }
-
-        let is_empty = staging_path.read_dir()?.next().is_none();
-        Ok(is_empty)
+        Ok(fs::read_dir(staging_path)?.next().is_none())
     }
 }
