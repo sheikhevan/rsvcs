@@ -1,6 +1,9 @@
+use crate::utils::Repository;
 use clap::{Parser, Subcommand};
+use std::env;
 mod add;
 mod init;
+mod utils;
 
 #[derive(Parser, Debug)]
 #[command(
@@ -30,17 +33,27 @@ fn main() {
     match args.command {
         Commands::Init => {
             println!("Initializing repository");
-            match init::init() {
-                Ok(()) => println!("Repository successfully initiated"),
-                Err(e) => eprintln!("There was an error creating the repository: {}", e),
-            };
+            let repo = Repository::new(env::current_dir().unwrap());
+            match repo.init() {
+                Ok(()) => println!("Repo successfully initialized!"),
+                Err(e) => eprintln!("Repo initialzation failed: {e}"),
+            }
         }
         Commands::Add { files } => {
+            let repo = match Repository::open() {
+                Ok(repo) => repo,
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                    return;
+                }
+            };
             for file in files {
                 if args.verbose {
                     println!("Adding files: {:?}", file);
                 }
-                add::add_to_repo(file);
+                if let Err(e) = repo.add(&file) {
+                    eprintln!("Error adding {}: {}", file, e);
+                }
             }
         }
         Commands::Commit { message } => {
