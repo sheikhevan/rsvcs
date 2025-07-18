@@ -38,5 +38,14 @@ fn main() {
         );
     }
 
-    backup::backup(&config.general.destinations, &config.targets.sources);
+    let backup_successful = backup::backup(
+        &config.general.destinations,
+        &config.targets.sources,
+        &config.targets.exclusions,
+    );
+
+    match backup_successful {
+        Ok(_) => println!("The backup was successful!"),
+        Err(e) => eprintln!("Backup failed: {:?}", e),
+    }
 }
