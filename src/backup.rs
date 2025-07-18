@@ -1,4 +1,7 @@
-use std::{fs, io, path::Path};
+use std::{
+    fs, io,
+    path::{Path, PathBuf},
+};
 use walkdir::{DirEntry, WalkDir};
 
 fn is_excluded(entry: &DirEntry, exclusions: &Vec<String>) -> bool {
@@ -14,20 +17,37 @@ pub fn backup(
     destinations: &Vec<String>,
     sources: &Vec<String>,
     exclusions: &Vec<String>,
-) -> Result<(), io::Error> {
+) -> Result<(), Box<dyn std::error::Error>> {
     for destination in destinations {
         for source in sources {
-            let walker = WalkDir::new(source).into_iter();
-            for entry in walker.filter_entry(|e| !is_excluded(e, exclusions)) {
+            let source_path = PathBuf::from(source);
+            let dest_path = PathBuf::from(destination);
+            for entry in WalkDir::new(&source_path)
+                .into_iter()
+                .filter_entry(|e| !is_excluded(e, exclusions))
+            {
                 let entry = entry?;
-                let path = entry.path();
-                let destination_path = Path::new(destination).join(path.file_name().unwrap());
 
-                if path.is_file() {
-                    fs::copy(path, &destination_path)?;
-                    if verbose {
-                        println!("{} copied to {}", path.display(), destination)
+                let from = entry.path();
+                let to = dest_path.join(from.strip_prefix(&source_path)?);
+                if verbose {
+                    println!("{} copied to => {}", from.display(), to.display())
+                }
+
+                // this creates the directories
+                if entry.file_type().is_dir() {
+                    if let Err(e) = fs::create_dir(to) {
+                        match e.kind() {
+                            io::ErrorKind::AlreadyExists => {}
+                            _ => return Err(e.into()),
+                        }
                     }
+                }
+                // copy the files over
+                else if entry.file_type().is_file() {
+                    fs::copy(from, to)?;
+                } else {
+                    eprintln!("ignored {}", from.display());
                 }
             }
         }
