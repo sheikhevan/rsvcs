@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+mod add;
 mod init;
 
 #[derive(Parser, Debug)]
@@ -35,7 +36,12 @@ fn main() {
             };
         }
         Commands::Add { files } => {
-            println!("Adding files: {:?}", files);
+            for file in files {
+                if args.verbose {
+                    println!("Adding files: {:?}", file);
+                }
+                add::add_to_repo(file);
+            }
         }
         Commands::Commit { message } => {
             println!("Commiting with message {:?}", message);
