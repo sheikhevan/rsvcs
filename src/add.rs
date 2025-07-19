@@ -31,7 +31,7 @@ impl Repository {
     }
     pub fn add(&self, file: &str) -> std::io::Result<()> {
         let source_path = self.working.join(file);
-        let staging_path = self.rsvcs.join("staging").join(file);
+        let staging_path = self.staging.join(file);
 
         if source_path.is_dir() {
             self.add_dir(&source_path, &staging_path)?;

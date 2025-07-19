@@ -73,7 +73,7 @@ fn main() {
                     println!("Staging directory is empty. Add files using 'rsvcs add'");
                 }
                 Ok(false) => {
-                    println!("Committing with message {:?}", message);
+                    println!("{:?}", message);
                     if let Err(e) = repo.commit(&message) {
                         eprintln!("Error committing: {}", e);
                     }
