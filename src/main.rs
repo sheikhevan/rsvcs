@@ -60,7 +60,7 @@ fn main() {
         }
 
         Commands::Commit { message } => {
-            let repo = match Repository::open() {
+            let mut repo = match Repository::open() {
                 Ok(repo) => repo,
                 Err(e) => {
                     eprintln!("Error: {}", e);
@@ -73,7 +73,6 @@ fn main() {
                     println!("Staging directory is empty. Add files using 'rsvcs add'");
                 }
                 Ok(false) => {
-                    println!("{:?}", message);
                     if let Err(e) = repo.commit(&message) {
                         eprintln!("Error committing: {}", e);
                     }
