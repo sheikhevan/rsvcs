@@ -4,6 +4,7 @@ use std::env;
 mod add;
 mod commit;
 mod init;
+mod log;
 mod utils;
 
 #[derive(Parser, Debug)]
