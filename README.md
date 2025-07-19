@@ -26,18 +26,19 @@ $ ./rsvcs
 
 ## Usage
 
-    - `rsvcs init` will initialze a new repository in the current directory.
-    - `rsvcs add` followed by the files/directories you want to stage (wildcard supported).
-    - `rsvcs commit` followed by the message you want to commit with will make a compressed tarball named with the hash of the commit.
+- `rsvcs init` will initialze a new repository in the current directory.
+- `rsvcs add` followed by the files/directories you want to stage (wildcard supported).
+- `rsvcs commit` followed by the message you want to commit with will make a compressed tarball named with the hash of the commit and also store the information in the `log`.
 
 ## Built With
 
-    - [Rust](https://www.rust-lang.org/)
-    - [clap](https://crates.io/crates/clap/)
-    - [flate2](https://crates.io/crates/flate2)
-    - [sha2](https://crates.io/crates/sha2)
-    - [tar](https://crates.io/crates/tar)
-    - [zstd](https://crates.io/crates/zstd)
+- [Rust](https://www.rust-lang.org/)
+- [clap](https://crates.io/crates/clap/)
+- [flate2](https://crates.io/crates/flate2)
+- [sha2](https://crates.io/crates/sha2)
+- [tar](https://crates.io/crates/tar)
+- [zstd](https://crates.io/crates/zstd)
+- [chrono](https://crates.io/crates/chrono)
 
 ## Contributing
 
@@ -45,7 +46,7 @@ Feel free to contribute. Simply fork the repository, make a new branch, and then
 
 ## Authors
 
-    - **Evan Alvarez**
+- **Evan Alvarez**
 
 See also the list of [contributors](https://github.com/sheikhevan/rsvcs/contributors) who participated in this project.
 
