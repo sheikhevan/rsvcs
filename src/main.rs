@@ -5,13 +5,14 @@ mod add;
 mod commit;
 mod init;
 mod log;
+mod pull;
 mod utils;
 
 #[derive(Parser, Debug)]
 #[command(
     name = "rsvcs",
     version = "0.0.1",
-    about = "Simple version control system written in Rust"
+    about = "Super simple backup utility with version control elements written in Rust"
 )]
 
 struct Cli {
@@ -35,11 +36,24 @@ enum Commands {
         #[command(subcommand)]
         log_command: LogCommands,
     },
+    Pull {
+        #[command(subcommand)]
+        pull_command: PullCommands,
+    },
 }
 
 #[derive(Subcommand, Debug)]
 enum LogCommands {
     Print,
+}
+
+#[derive(Subcommand, Debug)]
+enum PullCommands {
+    Latest,
+    #[command(name = "hash")]
+    Hash {
+        hash: String,
+    },
 }
 
 fn main() {
@@ -111,10 +125,40 @@ fn main() {
             };
             match log_command {
                 LogCommands::Print => {
-                    let _ = match repo.print_log() {
+                    match repo.print_log() {
                         Ok(()) => {}
                         Err(e) => eprintln!("Error: {}", e),
                     };
+                }
+            }
+        }
+
+        Commands::Pull { pull_command } => {
+            let repo = match Repository::open() {
+                Ok(repo) => repo,
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                    return;
+                }
+            };
+            match pull_command {
+                PullCommands::Latest => {
+                    if args.verbose {
+                        println!("Pulling latest commit")
+                    }
+                    match repo.pull_latest() {
+                        Ok(()) => println!("Successfully pulled latest commit"),
+                        Err(e) => eprintln!("Error: {}", e),
+                    }
+                }
+                PullCommands::Hash { hash } => {
+                    if args.verbose {
+                        println!("Pulling commit with hash {}", &hash)
+                    }
+                    match repo.pull_hash(&hash) {
+                        Ok(()) => println!("Successfully pulled commit {}", hash),
+                        Err(e) => println!("Error: {}", e),
+                    }
                 }
             }
         }
