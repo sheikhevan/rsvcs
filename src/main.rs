@@ -25,8 +25,21 @@ struct Cli {
 #[derive(Subcommand, Debug)]
 enum Commands {
     Init,
-    Add { files: Vec<String> },
-    Commit { message: String },
+    Add {
+        files: Vec<String>,
+    },
+    Commit {
+        message: String,
+    },
+    Log {
+        #[command(subcommand)]
+        log_command: LogCommands,
+    },
+}
+
+#[derive(Subcommand, Debug)]
+enum LogCommands {
+    Print,
 }
 
 fn main() {
@@ -34,11 +47,13 @@ fn main() {
 
     match args.command {
         Commands::Init => {
-            println!("Initializing repository");
+            if args.verbose {
+                println!("Initializing Repository")
+            }
             let repo = Repository::new(env::current_dir().unwrap());
             match repo.init() {
-                Ok(()) => println!("Repo successfully initialized!"),
-                Err(e) => eprintln!("Repo initialzation failed: {e}"),
+                Ok(()) => println!("Repository successfully initialized!"),
+                Err(e) => eprintln!("Repository initialization failed: {e}"),
             }
         }
 
@@ -50,6 +65,7 @@ fn main() {
                     return;
                 }
             };
+
             for file in files {
                 if args.verbose {
                     println!("Adding files: {:?}", file);
@@ -58,6 +74,7 @@ fn main() {
                     eprintln!("Error adding {}: {}", file, e);
                 }
             }
+            println!("Operation completed successfully")
         }
 
         Commands::Commit { message } => {
@@ -75,11 +92,29 @@ fn main() {
                 }
                 Ok(false) => {
                     if let Err(e) = repo.commit(&message) {
-                        eprintln!("Error committing: {}", e);
+                        eprintln!("Error: {}", e);
                     }
                 }
                 Err(e) => {
                     eprintln!("Error checking staging directory: {}", e);
+                }
+            }
+        }
+
+        Commands::Log { log_command } => {
+            let repo = match Repository::open() {
+                Ok(repo) => repo,
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                    return;
+                }
+            };
+            match log_command {
+                LogCommands::Print => {
+                    let _ = match repo.print_log() {
+                        Ok(()) => {}
+                        Err(e) => eprintln!("Error: {}", e),
+                    };
                 }
             }
         }
