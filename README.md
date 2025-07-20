@@ -29,6 +29,7 @@ $ ./rsvcs
 - `rsvcs init` will initialze a new repository in the current directory.
 - `rsvcs add` followed by the files/directories you want to stage (wildcard supported).
 - `rsvcs commit` followed by the message you want to commit with will make a compressed tarball named with the hash of the commit and also store the information in the `log`.
+- `rsvcs log print` prints out the log stored in ".rsvcs/log".
 
 ## Built With
 
