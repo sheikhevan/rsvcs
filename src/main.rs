@@ -6,6 +6,7 @@ mod commit;
 mod init;
 mod log;
 mod pull;
+mod tarball;
 mod utils;
 
 #[derive(Parser, Debug)]
