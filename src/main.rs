@@ -5,13 +5,14 @@ mod add;
 mod commit;
 mod init;
 mod log;
+mod pull;
 mod utils;
 
 #[derive(Parser, Debug)]
 #[command(
     name = "rsvcs",
     version = "0.0.1",
-    about = "Simple version control system written in Rust"
+    about = "Super simple backup utility with version control elements written in Rust"
 )]
 
 struct Cli {
@@ -34,6 +35,9 @@ enum Commands {
     Log {
         #[command(subcommand)]
         log_command: LogCommands,
+    },
+    Pull {
+        hash: Option<String>,
     },
 }
 
@@ -71,10 +75,10 @@ fn main() {
                     println!("Adding files: {:?}", file);
                 }
                 if let Err(e) = repo.add(&file) {
-                    eprintln!("Error adding {}: {}", file, e);
+                    eprintln!("Error adding {:?}: {}", file, e);
                 }
             }
-            println!("Operation completed successfully")
+            println!("Successfully added files to staging!")
         }
 
         Commands::Commit { message } => {
@@ -88,7 +92,7 @@ fn main() {
 
             match repo.is_staging_empty() {
                 Ok(true) => {
-                    println!("Staging directory is empty. Add files using 'rsvcs add'");
+                    println!("Staging directory is empty. Add files using 'rsvcs add'.");
                 }
                 Ok(false) => {
                     if let Err(e) = repo.commit(&message) {
@@ -111,11 +115,37 @@ fn main() {
             };
             match log_command {
                 LogCommands::Print => {
-                    let _ = match repo.print_log() {
+                    match repo.print_log() {
                         Ok(()) => {}
                         Err(e) => eprintln!("Error: {}", e),
                     };
                 }
+            }
+        }
+
+        Commands::Pull { hash } => {
+            let repo = match Repository::open() {
+                Ok(repo) => repo,
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                    return;
+                }
+            };
+
+            match hash {
+                Some(hash_value) => {
+                    if args.verbose {
+                        println!("Pulling commit with hash {}.", &hash_value)
+                    }
+                    match repo.pull_hash(&hash_value) {
+                        Ok(()) => println!("Successfully pulled commit {}!", hash_value),
+                        Err(e) => println!("Error: {}", e),
+                    }
+                }
+                None => match repo.pull_latest() {
+                    Ok(()) => println!("Successfully pulled latest commit!"),
+                    Err(e) => eprintln!("Error: {}", e),
+                },
             }
         }
     }
