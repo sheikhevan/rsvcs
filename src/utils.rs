@@ -84,6 +84,7 @@ impl Repository {
         let decoder = zstd::Decoder::new(file_ref)?;
         let mut archive = tar::Archive::new(decoder);
         archive.unpack(".")?;
+        archive.into_inner().finish();
 
         println!("Sucessfully unpacked the tarball!");
 
