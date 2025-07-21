@@ -2,6 +2,7 @@ use crate::utils::Repository;
 use std::{error::Error, fs};
 
 impl Repository {
+    fn add_latest_commit(hash: String) -> Result<(), Box<dyn Error>> {}
     pub fn commit(&mut self, message: &str) -> Result<String, Box<dyn Error>> {
         let hash = self.make_tarball()?;
         println!("Commit successful!");
