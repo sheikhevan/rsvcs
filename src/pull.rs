@@ -1,9 +1,5 @@
 use crate::utils::Repository;
-use std::{
-    error::Error,
-    fs::File,
-    io::{self, Read},
-};
+use std::{error::Error, fs::File, io::Read};
 
 impl Repository {
     pub fn pull_latest(&self) -> Result<(), Box<dyn Error>> {
@@ -16,11 +12,12 @@ impl Repository {
         };
         let mut contents = String::new();
         file.read_to_string(&mut contents)?;
-        println!("{}", contents);
+        self.pull_tarball(&contents)?;
         Ok(())
     }
 
     pub fn pull_hash(&self, hash: &str) -> Result<(), Box<dyn Error>> {
+        self.pull_tarball(hash)?;
         Ok(())
     }
 }

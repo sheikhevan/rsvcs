@@ -55,7 +55,7 @@ impl Repository {
         archive.append_dir_all(".", &self.staging)?;
 
         archive.into_inner()?.finish()?;
-        println!("Sucessfully created the tarball.");
+        println!("Sucessfully created the tarball!");
 
         // Now we must generate the sha256 hash
         let mut file = File::open(&tarball_path)?;
@@ -76,5 +76,17 @@ impl Repository {
         fs::rename(&tarball_path, &final_tarball_path)?;
 
         Ok(hash)
+    }
+
+    pub fn pull_tarball(&self, hash: &str) -> Result<(), Box<dyn Error>> {
+        let tarball_path = self.commits.join(format!("{}.tar.zst", hash));
+        let file_ref = File::open(&tarball_path)?;
+        let decoder = zstd::Decoder::new(file_ref)?;
+        let mut archive = tar::Archive::new(decoder);
+        archive.unpack(".")?;
+
+        println!("Sucessfully unpacked the tarball!");
+
+        Ok(())
     }
 }
