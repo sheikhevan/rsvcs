@@ -12,7 +12,6 @@ pub struct Repository {
     pub rsvcs: PathBuf,
     pub staging: PathBuf,
     pub commits: PathBuf,
-    pub latest_commit: Option<String>,
 }
 
 impl Repository {
@@ -25,7 +24,6 @@ impl Repository {
             rsvcs,
             staging,
             commits,
-            latest_commit: None,
         }
     }
 

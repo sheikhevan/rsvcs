@@ -24,7 +24,7 @@ impl Repository {
         let timestamp = datetime.format("%Y-%m-%d %H:%M:%S").to_string();
 
         let mut log_file = OpenOptions::new().append(true).open(log_path)?;
-        log_file.write_all(format!("{} [{}] {}\n", timestamp, hash, message).as_bytes())?;
+        log_file.write_all(format!("{} \"{}\"\n[{}]\n\n", timestamp, message, hash).as_bytes())?;
         Ok(())
     }
 }

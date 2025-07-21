@@ -37,23 +37,13 @@ enum Commands {
         log_command: LogCommands,
     },
     Pull {
-        #[command(subcommand)]
-        pull_command: PullCommands,
+        hash: Option<String>,
     },
 }
 
 #[derive(Subcommand, Debug)]
 enum LogCommands {
     Print,
-}
-
-#[derive(Subcommand, Debug)]
-enum PullCommands {
-    Latest,
-    #[command(name = "hash")]
-    Hash {
-        hash: String,
-    },
 }
 
 fn main() {
@@ -85,10 +75,10 @@ fn main() {
                     println!("Adding files: {:?}", file);
                 }
                 if let Err(e) = repo.add(&file) {
-                    eprintln!("Error adding {}: {}", file, e);
+                    eprintln!("Error adding {:?}: {}", file, e);
                 }
             }
-            println!("Operation completed successfully")
+            println!("Successfully added files to staging!")
         }
 
         Commands::Commit { message } => {
@@ -102,7 +92,7 @@ fn main() {
 
             match repo.is_staging_empty() {
                 Ok(true) => {
-                    println!("Staging directory is empty. Add files using 'rsvcs add'");
+                    println!("Staging directory is empty. Add files using 'rsvcs add'.");
                 }
                 Ok(false) => {
                     if let Err(e) = repo.commit(&message) {
@@ -133,7 +123,7 @@ fn main() {
             }
         }
 
-        Commands::Pull { pull_command } => {
+        Commands::Pull { hash } => {
             let repo = match Repository::open() {
                 Ok(repo) => repo,
                 Err(e) => {
@@ -141,25 +131,21 @@ fn main() {
                     return;
                 }
             };
-            match pull_command {
-                PullCommands::Latest => {
+
+            match hash {
+                Some(hash_value) => {
                     if args.verbose {
-                        println!("Pulling latest commit")
+                        println!("Pulling commit with hash {}.", &hash_value)
                     }
-                    match repo.pull_latest() {
-                        Ok(()) => println!("Successfully pulled latest commit"),
-                        Err(e) => eprintln!("Error: {}", e),
-                    }
-                }
-                PullCommands::Hash { hash } => {
-                    if args.verbose {
-                        println!("Pulling commit with hash {}", &hash)
-                    }
-                    match repo.pull_hash(&hash) {
-                        Ok(()) => println!("Successfully pulled commit {}", hash),
+                    match repo.pull_hash(&hash_value) {
+                        Ok(()) => println!("Successfully pulled commit {}!", hash_value),
                         Err(e) => println!("Error: {}", e),
                     }
                 }
+                None => match repo.pull_latest() {
+                    Ok(()) => println!("Successfully pulled latest commit!"),
+                    Err(e) => eprintln!("Error: {}", e),
+                },
             }
         }
     }
