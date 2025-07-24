@@ -1,10 +1,11 @@
-use crate::utils::Repository;
+use crate::{parse_config::Config, utils::Repository};
 use clap::{Parser, Subcommand};
 use std::env;
 mod add;
 mod commit;
 mod init;
 mod log;
+mod parse_config;
 mod pull;
 mod tarball;
 mod utils;
@@ -52,10 +53,19 @@ fn main() {
 
     match args.command {
         Commands::Init => {
-            if args.verbose {
+            let config = match repo.read_config() {
+                Ok(config) => config,
+                Err(e) => {
+                    eprintln!("Couldn't read config: {}", e);
+                    Config::default()
+                }
+            };
+
+            if args.verbose || config.general.verbose {
                 println!("Initializing Repository")
             }
             let repo = Repository::new(env::current_dir().unwrap());
+            let _ = repo.write_default_config();
             match repo.init() {
                 Ok(()) => println!("Repository successfully initialized!"),
                 Err(e) => eprintln!("Repository initialization failed: {e}"),
@@ -71,8 +81,28 @@ fn main() {
                 }
             };
 
+            let config = match repo.read_config() {
+                Ok(config) => config,
+                Err(e) => {
+                    eprintln!("Couldn't read config: {}", e);
+                    Config::default()
+                }
+            };
+
             for file in files {
-                if args.verbose {
+                if config
+                    .general
+                    .ignore
+                    .iter()
+                    .any(|pattern| file.contains(pattern))
+                {
+                    if args.verbose || config.general.verbose {
+                        println!("Ignoring file: {}", file);
+                    }
+                    continue;
+                }
+
+                if args.verbose || config.general.verbose {
                     println!("Adding files: {:?}", file);
                 }
                 if let Err(e) = repo.add(&file) {
@@ -133,9 +163,17 @@ fn main() {
                 }
             };
 
+            let config = match repo.read_config() {
+                Ok(config) => config,
+                Err(e) => {
+                    eprintln!("Couldn't read config: {}", e);
+                    Config::default()
+                }
+            };
+
             match hash {
                 Some(hash_value) => {
-                    if args.verbose {
+                    if args.verbose || config.general.verbose {
                         println!("Pulling commit with hash {}.", &hash_value)
                     }
                     match repo.pull_hash(&hash_value) {
