@@ -53,15 +53,7 @@ fn main() {
 
     match args.command {
         Commands::Init => {
-            let config = match repo.read_config() {
-                Ok(config) => config,
-                Err(e) => {
-                    eprintln!("Couldn't read config: {}", e);
-                    Config::default()
-                }
-            };
-
-            if args.verbose || config.general.verbose {
+            if args.verbose {
                 println!("Initializing Repository")
             }
             let repo = Repository::new(env::current_dir().unwrap());
