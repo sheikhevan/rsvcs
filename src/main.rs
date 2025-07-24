@@ -95,10 +95,10 @@ fn main() {
                 }
 
                 if args.verbose || config.general.verbose {
-                    println!("Adding files: {:?}", file);
+                    println!("Adding file: {}", file);
                 }
                 if let Err(e) = repo.add(&file) {
-                    eprintln!("Error adding {:?}: {}", file, e);
+                    eprintln!("Error adding {}: {}", file, e);
                 }
             }
             println!("Successfully added files to staging!")
