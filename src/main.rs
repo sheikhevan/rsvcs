@@ -13,7 +13,7 @@ mod utils;
 #[derive(Parser, Debug)]
 #[command(
     name = "rsvcs",
-    version = "0.0.1",
+    version = "1.0.0",
     about = "Super simple backup utility with version control elements written in Rust"
 )]
 
